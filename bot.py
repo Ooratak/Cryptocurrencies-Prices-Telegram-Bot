@@ -3,10 +3,12 @@ from telegram.ext import Application, CommandHandler, CallbackContext
 from get_crypto_price import get_crypto_price
 from subscribe import Subscribe
 from dotenv import load_dotenv
-import threading
+import nest_asyncio
+import asyncio
 import os
 
 load_dotenv()
+nest_asyncio.apply()
 
 TOKEN = os.getenv("TOKEN")
 
@@ -29,20 +31,28 @@ async def price(update: Update, context: CallbackContext) -> None:
 
 async def subscribe(update: Update, context: CallbackContext) -> None:
     if len(context.args) == 2:
-        subs = Subscribe(context.args[0], context.args[1], update)
-        await update.message.reply_text('The subscribe added.')
-        thread = threading.Thread(target=subs.check_subscribe)
-        thread.start()
+        subscribes.append(Subscribe(context.args[0], context.args[1], update))
+        await update.message.reply_text('The bot will send you a message when the price is updated.')
     else:
         await update.message.reply_text('The command is not valid; Please try again.')
 
-def main():
+async def handle_subscribes() -> None:
+    while True:
+        for sub in subscribes:
+            await sub.subscribe()
+            await asyncio.sleep(1)
+
+subscribes = []
+
+async def main():
     application = Application.builder().token(TOKEN).build()
     application.add_handler(CommandHandler("help", help))
     application.add_handler(CommandHandler("check", check))
     application.add_handler(CommandHandler("price", price))
     application.add_handler(CommandHandler("subscribe", subscribe))
-    application.run_polling()
+    task = [asyncio.create_task(handle_subscribes()), asyncio.create_task(application.run_polling())]
+    await task[0]
+    await task[1]
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
