@@ -14,6 +14,11 @@ class Subscribe:
         self.update = update
         self.initPrice = get_crypto_price(crypto)
 
+    def __eq__(self, sub: object) -> bool:
+        if isinstance(sub, Subscribe):
+            return self.crypto == sub.crypto and self.changePercent == sub.changePercent and self.initPrice == sub.initPrice
+        return False
+
     async def subscribe(self) -> None:
         while True:
             newPrice = get_crypto_price(self.crypto)
