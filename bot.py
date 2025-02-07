@@ -49,7 +49,7 @@ def check_subscribe(crypto: str, changePercent: float, update: Update) -> None:
 
 async def subscribe(update: Update, context: CallbackContext) -> None:
     if len(context.args) == 2:
-        await update.message.reply_text('The subscribe has been added; The bot will send you a message when the price is updated.')
+        await update.message.reply_text('The bot will send you a message when the price is updated.')
         thread = threading.Thread(target=check_subscribe, args=(context.args[0], float(context.args[1]), update))
         thread.start()
     else:
