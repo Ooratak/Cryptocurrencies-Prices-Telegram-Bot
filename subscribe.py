@@ -16,7 +16,7 @@ class Subscribe:
     def check_subscribe(self):
         while True:
             newPrice = get_crypto_price(self.crypto)
-            if self.initPrice * (100 + self.changePercent) == newPrice:
+            if self.initPrice * (1 + self.changePercent / 100) == newPrice:
                 self.update.message.reply_text(f'The new price is {newPrice} USD.')
                 del self
                 return
