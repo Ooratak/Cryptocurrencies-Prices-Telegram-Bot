@@ -1,10 +1,8 @@
 from telegram import Update
 from telegram.ext import Application, CommandHandler, CallbackContext
 from dotenv import load_dotenv
-import threading
 import requests
 import asyncio
-import time
 import os
 
 load_dotenv()
@@ -36,22 +34,21 @@ async def get_price(update: Update, context: CallbackContext) -> None:
     else:
         await update.message.reply_text('The command is not valid; Please try again.')
 
-def check_subscribe(crypto: str, changePercent: float, update: Update) -> None:
-    initPrice = get_crypto_price(crypto)
+async def check_subscribe(crypto: str, changePercent: float, update: Update) -> None:
+    initPrice = -1
+    while initPrice == -1:
+        initPrice = get_crypto_price(crypto)
     while True:
         newPrice = get_crypto_price(crypto)
         if initPrice * (1 + changePercent / 100) == newPrice:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            loop.run_until_complete(update.message.reply_text(f'The {crypto} price is {newPrice} USD now.'))
+            await update.message.reply_text(f'The {crypto} price has changed to {newPrice} USD now.')
             return
-        time.sleep(2)
+        await asyncio.sleep(3)
 
 async def subscribe(update: Update, context: CallbackContext) -> None:
     if len(context.args) == 2:
         await update.message.reply_text('The bot will send you a message when the price is updated.')
-        thread = threading.Thread(target=check_subscribe, args=(context.args[0], float(context.args[1]), update))
-        thread.start()
+        asyncio.create_task(check_subscribe(context.args[0], float(context.args[1]), update))
     else:
         await update.message.reply_text('The command is not valid; Please try again.')
 
