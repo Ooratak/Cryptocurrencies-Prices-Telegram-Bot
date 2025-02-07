@@ -28,7 +28,7 @@ async def subscribe(update: Update, context: CallbackContext) -> None:
     if len(context.args) == 2:
         subs = Subscribe(context.args[0], context.args[1], update)
         await update.message.reply_text('The subscribe added.')
-        thread = threading.Thread(subs.check_subscribe())
+        thread = threading.Thread(target=subs.check_subscribe)
         thread.start()
     else:
         await update.message.reply_text('The command is not valid; Please try again.')
