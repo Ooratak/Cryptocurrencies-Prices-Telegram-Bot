@@ -11,7 +11,9 @@ load_dotenv()
 TOKEN = os.getenv("TOKEN")
 
 async def help(update: Update, context: CallbackContext) -> None:
-    await update.message.reply_text('You can use /start to check if the bot is up and running.\nYou can use /get_price {crypto_name} to check the price.')
+    await update.message.reply_text('You can use "/start" to check if the bot is up and running.\n'
+                                    'You can use "/get_price {cryptoName}" to check the price.\n'
+                                    'You can use "/subscribe {cryptoName} {percent}" to check the price.\n')
 
 async def check(update: Update, context: CallbackContext) -> None:
     await update.message.reply_text('The bot is up and running.')
@@ -40,7 +42,7 @@ def check_subscribe(crypto: str, changePercent: float, update: Update) -> None:
         if initPrice * (1 + changePercent / 100) == newPrice:
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
-            loop.run_until_complete(update.message.reply_text(f'The price is {newPrice} USD now.'))
+            loop.run_until_complete(update.message.reply_text(f'The {crypto} price is {newPrice} USD now.'))
             return
 
 async def subscribe(update: Update, context: CallbackContext) -> None:
