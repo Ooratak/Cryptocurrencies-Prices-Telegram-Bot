@@ -1,5 +1,5 @@
 from telegram import Update
-from bot import get_crypto_price
+from get_crypto_price import get_crypto_price
 
 class Subscribe:
     crypto: str
