@@ -16,15 +16,6 @@ async def help(update: Update, context: CallbackContext) -> None:
 async def check(update: Update, context: CallbackContext) -> None:
     await update.message.reply_text('The bot is up and running.')
 
-def get_crypto_price(crypto: str) -> float:
-    url = f"https://api.coingecko.com/api/v3/simple/price?ids={crypto}&vs_currencies=usd"
-    response = requests.get(url)
-    if response.status_code == 200:
-        data = response.json()
-        return data[crypto]["usd"]
-    else:
-        return -1;
-
 async def get_price(update: Update, context: CallbackContext) -> None:
     if len(context.args) == 1:
         crypto = context.args[0]
