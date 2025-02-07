@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import threading
 import requests
 import asyncio
+import time
 import os
 
 load_dotenv()
@@ -44,6 +45,7 @@ def check_subscribe(crypto: str, changePercent: float, update: Update) -> None:
             asyncio.set_event_loop(loop)
             loop.run_until_complete(update.message.reply_text(f'The {crypto} price is {newPrice} USD now.'))
             return
+        time.sleep(2)
 
 async def subscribe(update: Update, context: CallbackContext) -> None:
     if len(context.args) == 2:
