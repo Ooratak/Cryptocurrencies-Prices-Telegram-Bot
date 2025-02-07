@@ -11,7 +11,7 @@ TOKEN = os.getenv("TOKEN")
 
 async def help(update: Update, context: CallbackContext) -> None:
     await update.message.reply_text('You can use "/check" to check if the bot is up and running.\n'
-                                    'You can use "/get_price {cryptoName}" to check the price.\n'
+                                    'You can use "/price {cryptoName}" to check the price.\n'
                                     'You can use "/subscribe {cryptoName} {percent}" to get notified when the price rises or falls.\n')
 
 async def check(update: Update, context: CallbackContext) -> None:
@@ -26,7 +26,7 @@ def get_crypto_price(crypto: str) -> float:
     else:
         return -1;
 
-async def get_price(update: Update, context: CallbackContext) -> None:
+async def price(update: Update, context: CallbackContext) -> None:
     if len(context.args) == 1:
         crypto = context.args[0]
         price = get_crypto_price(crypto)
@@ -56,7 +56,7 @@ def main():
     application = Application.builder().token(TOKEN).build()
     application.add_handler(CommandHandler("help", help))
     application.add_handler(CommandHandler("check", check))
-    application.add_handler(CommandHandler("get_price", get_price))
+    application.add_handler(CommandHandler("price", price))
     application.add_handler(CommandHandler("subscribe", subscribe))
     application.run_polling()
 
