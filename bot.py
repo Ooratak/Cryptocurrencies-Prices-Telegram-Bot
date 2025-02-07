@@ -1,9 +1,9 @@
 from telegram import Update
 from telegram.ext import Application, CommandHandler, CallbackContext
-from get_crypto_price import get_crypto_price
-from subscribe import Subscribe
 from dotenv import load_dotenv
 import threading
+import requests
+import asyncio
 import os
 
 load_dotenv()
@@ -16,6 +16,15 @@ async def help(update: Update, context: CallbackContext) -> None:
 async def check(update: Update, context: CallbackContext) -> None:
     await update.message.reply_text('The bot is up and running.')
 
+def get_crypto_price(crypto: str) -> float:
+    url = f"https://api.coingecko.com/api/v3/simple/price?ids={crypto}&vs_currencies=usd"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        return data[crypto]["usd"]
+    else:
+        return -1;
+
 async def get_price(update: Update, context: CallbackContext) -> None:
     if len(context.args) == 1:
         crypto = context.args[0]
@@ -24,11 +33,20 @@ async def get_price(update: Update, context: CallbackContext) -> None:
     else:
         await update.message.reply_text('The command is not valid; Please try again.')
 
+def check_subscribe(crypto: str, changePercent: float, update: Update) -> None:
+    initPrice = get_crypto_price(crypto)
+    while True:
+        newPrice = get_crypto_price(crypto)
+        if initPrice * (1 + changePercent / 100) == newPrice:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(update.message.reply_text(f'The price is {newPrice} USD now.'))
+            return
+
 async def subscribe(update: Update, context: CallbackContext) -> None:
     if len(context.args) == 2:
-        subs = Subscribe(context.args[0], context.args[1], update)
-        await update.message.reply_text('The subscribe added.')
-        thread = threading.Thread(target=subs.check_subscribe)
+        await update.message.reply_text('The subscribe has been added; The bot will send you a message when the price is updated.')
+        thread = threading.Thread(target=check_subscribe, args=(context.args[0], float(context.args[1]), update))
         thread.start()
     else:
         await update.message.reply_text('The command is not valid; Please try again.')
