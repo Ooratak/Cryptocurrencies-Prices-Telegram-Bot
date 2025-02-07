@@ -16,7 +16,7 @@ class Subscribe:
 
     def __eq__(self, sub: object) -> bool:
         if isinstance(sub, Subscribe):
-            return self.crypto == sub.crypto and self.changePercent == sub.changePercent and self.initPrice == sub.initPrice
+            return self.crypto == sub.crypto and self.changePercent == sub.changePercent
         return False
 
     async def subscribe(self) -> None:
