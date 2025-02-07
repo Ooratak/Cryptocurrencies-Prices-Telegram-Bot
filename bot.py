@@ -1,6 +1,8 @@
 from telegram import Update
 from telegram.ext import Application, CommandHandler, CallbackContext
+from subscribe import Subscribe
 from dotenv import load_dotenv
+import threading
 import requests
 import os
 
@@ -31,11 +33,18 @@ async def get_price(update: Update, context: CallbackContext) -> None:
     else:
         await update.message.reply_text('The command is not valid; Please try again.')
 
+async def subscribe(update: Update, context: CallbackContext) -> None:
+    subs = Subscribe(context.args[0], context.args[1], update)
+    await update.message.reply_text('The subscribe added.')
+    thread = threading.Thread(subs.check_subscribe())
+    thread.start()
+
 def main():
     application = Application.builder().token(TOKEN).build()
     application.add_handler(CommandHandler("help", help))
     application.add_handler(CommandHandler("check", check))
     application.add_handler(CommandHandler("get_price", get_price))
+    application.add_handler(CommandHandler("subscribe", subscribe))
     application.run_polling()
 
 if __name__ == "__main__":
