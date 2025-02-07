@@ -1,9 +1,9 @@
 from telegram import Update
 from telegram.ext import Application, CommandHandler, CallbackContext
+from get_crypto_price import get_crypto_price
 from subscribe import Subscribe
 from dotenv import load_dotenv
 import threading
-import requests
 import os
 
 load_dotenv()
