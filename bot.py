@@ -14,7 +14,7 @@ TOKEN = os.getenv("TOKEN")
 async def help(update: Update, context: CallbackContext) -> None:
     await update.message.reply_text('You can use "/check" to check if the bot is up and running.\n'
                                     'You can use "/get_price {cryptoName}" to check the price.\n'
-                                    'You can use /subscribe {cryptoName} {percent} to get notified when the price rises or falls.\n')
+                                    'You can use "/subscribe {cryptoName} {percent}" to get notified when the price rises or falls.\n')
 
 async def check(update: Update, context: CallbackContext) -> None:
     await update.message.reply_text('The bot is up and running.')
