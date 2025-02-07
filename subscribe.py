@@ -19,7 +19,7 @@ class Subscribe:
             newPrice = get_crypto_price(self.crypto)
             if (self.changePercent >= 0 and self.initPrice * (1 + self.changePercent / 100) <= newPrice) or\
                 (self.changePercent < 0 and newPrice <= self.initPrice * (1 + self.changePercent / 100)):
-                await self.update.message.reply_text(f'The new price is {newPrice} USD.')
+                await self.update.message.reply_text(f'The new price is {newPrice} USD now.')
             await asyncio.sleep(1)
 
     async def unsubscribe(self) -> None:
