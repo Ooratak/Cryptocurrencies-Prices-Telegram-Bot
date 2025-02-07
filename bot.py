@@ -31,8 +31,8 @@ async def price(update: Update, context: CallbackContext) -> None:
 
 async def subscribe(update: Update, context: CallbackContext) -> None:
     if len(context.args) == 2:
-        subscribes.append(Subscribe(context.args[0], context.args[1], update))
         await update.message.reply_text('The bot will send you a message when the price is updated.')
+        subscribes.append(Subscribe(context.args[0], context.args[1], update))
     else:
         await update.message.reply_text('The command is not valid; Please try again.')
 
@@ -40,7 +40,18 @@ async def handle_subscribes() -> None:
     while True:
         for sub in subscribes:
             await sub.subscribe()
-            await asyncio.sleep(1)
+        await asyncio.sleep(10)
+
+async def unsubscribe(update: Update, context: CallbackContext) -> None:
+    if len(context.args) == 2:
+        unsub = Subscribe(context.args[0], context.args[1], update)
+        if unsub in subscribes:
+            subscribes.pop(subscribes.index(unsub))
+            await update.message.reply_text('The unsubscribe was successful.')
+        else:
+            await update.message.reply_text('There is no subscribe like this.')
+    else:
+        await update.message.reply_text('The command is not valid; Please try again.')
 
 subscribes = []
 
@@ -50,6 +61,7 @@ async def main():
     application.add_handler(CommandHandler("check", check))
     application.add_handler(CommandHandler("price", price))
     application.add_handler(CommandHandler("subscribe", subscribe))
+    application.add_handler(CommandHandler("unsubscribe", unsubscribe))
     task = [asyncio.create_task(handle_subscribes()), asyncio.create_task(application.run_polling())]
     await task[0]
     await task[1]
